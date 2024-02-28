@@ -22,15 +22,51 @@ class GameState:
 
     def reset(self):
         self.__init__()
+
+    def try_to_grab(self):
+        new_grabbed_molecules = []
+
+        grab_pos_up = Position(self.player.x, self.player.y - 1)
+        grab_pos_down = Position(self.player.x, self.player.y + 1)
+        grab_pos_left = Position(self.player.x - 1, self.player.y)
+        grab_pos_right = Position(self.player.x + 1, self.player.y)
+
+        for molecule_index in range(0, len(self.level.molecules)):
+            molecule = self.level.molecules[molecule_index]
+            if molecule == grab_pos_up or molecule == grab_pos_down or molecule == grab_pos_left or molecule == grab_pos_right:
+                new_grabbed_molecules.append(molecule_index)
+
+        self.grabbed_molecules = new_grabbed_molecules
     
     def try_to_move(self, direction):
-        new_player = Position(self.player.x + direction[0], self.player.y + direction[1])
+        collision_pos = Position(self.player.x, self.player.y)
+        collision_index = 0 # 0=looking 1=found_empty 2=found_wall
 
-        for wall in self.level.walls:
-            if wall == new_player:
-                return
+        while collision_index == 0:
+            collision_index = 1
+
+            collision_pos.x += direction[0]
+            collision_pos.y += direction[1]
+
+            for molecule in self.level.molecules:
+                if molecule == collision_pos:
+                    collision_index = 0
+                    break
+
+            for wall in self.level.walls:
+                if wall == collision_pos:
+                    collision_index = 2
+                    break
             
-        self.player = new_player
+        if collision_index == 1:
+            self.player.x += direction[0]
+            self.player.y += direction[1]
+
+            for grabbed_molecule_index in self.grabbed_molecules:
+                self.level.molecules[grabbed_molecule_index].x += direction[0]
+                self.level.molecules[grabbed_molecule_index].y += direction[1]
+
+            self.try_to_grab()
 
 
 
@@ -63,7 +99,7 @@ class Level:
                                              "XXX       XXX"
                                              "XX  M   M  XX"
                                              "X           X"
-                                             "XX         XX"
+                                             "XX   X     XX"
                                              "XXX M   M XXX"
                                              "XXXX     XXXX"
                                              "XXXXX   XXXXX"
