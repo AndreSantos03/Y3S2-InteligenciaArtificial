@@ -1,12 +1,12 @@
 import pygame
 
 def draw_player(gamestate, surface):
-    pygame.draw.circle(surface, (200,200,20), (gamestate.player.x*50 + 25, gamestate.player.y*50 + 25), 20)
+    pygame.draw.circle(surface, (200,200,20), (gamestate.player.position.x*50 + 25, gamestate.player.position.y*50 + 25), 20)
 
-    pygame.draw.rect(surface, (0,0,0), (gamestate.player.x*50, gamestate.player.y*50 - 50, 50,50), 1)
-    pygame.draw.rect(surface, (0,0,0), (gamestate.player.x*50, gamestate.player.y*50 + 50, 50,50), 1)
-    pygame.draw.rect(surface, (0,0,0), (gamestate.player.x*50 - 50, gamestate.player.y*50, 50,50), 1)
-    pygame.draw.rect(surface, (0,0,0), (gamestate.player.x*50 + 50, gamestate.player.y*50, 50,50), 1)
+    pygame.draw.rect(surface, (0,0,0), (gamestate.player.position.x*50, gamestate.player.position.y*50 - 50, 50,50), 1)
+    pygame.draw.rect(surface, (0,0,0), (gamestate.player.position.x*50, gamestate.player.position.y*50 + 50, 50,50), 1)
+    pygame.draw.rect(surface, (0,0,0), (gamestate.player.position.x*50 - 50, gamestate.player.position.y*50, 50,50), 1)
+    pygame.draw.rect(surface, (0,0,0), (gamestate.player.position.x*50 + 50, gamestate.player.position.y*50, 50,50), 1)
 
 def draw_walls(gamestate, surface):
     for wall in gamestate.level.walls:
@@ -14,7 +14,7 @@ def draw_walls(gamestate, surface):
 
 def draw_molecules(gamestate, surface):
     for molecule in gamestate.level.molecules:
-        pygame.draw.circle(surface, (200,20,20), (molecule.x*50 + 25, molecule.y*50 + 25), 20)
+        pygame.draw.circle(surface, (200,20,20), (molecule.position.x*50 + 25, molecule.position.y*50 + 25), 20)
 
 def draw_screen(gamestate, surface):
     draw_walls(gamestate, surface)
