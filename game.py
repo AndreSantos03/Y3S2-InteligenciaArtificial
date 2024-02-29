@@ -39,13 +39,16 @@ class GameState:
         self.grabbed_molecules = new_grabbed_molecules
     
     def try_to_move_molecule(self, molecule, direction):
-        print (0)
         if (self.level.walls[molecule.position.y + direction[1]][molecule.position.x + direction[0]] == 0):
-            print (1)
-            if (self.level.molecules[molecule.position.y + direction[1]][molecule.position.x + direction[0]] == None):
-                molecule.position.x += direction[0]
-                molecule.position.y += direction[1]
-                print (2)
+            next_molecule = self.level.molecules[molecule.position.y + direction[1]][molecule.position.x + direction[0]]
+            print (self.level.molecules[molecule.position.y + direction[1]][molecule.position.x + direction[0]])
+            if (next_molecule != None):
+                if not self.try_to_move_molecule(next_molecule, direction):
+                    return False
+            molecule.position.x += direction[0]
+            molecule.position.y += direction[1]
+            return True
+        return False
     
     def try_to_move(self, direction):
         if self.try_to_move_molecule(self.player, direction):
