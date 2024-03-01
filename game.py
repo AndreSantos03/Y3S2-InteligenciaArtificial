@@ -26,15 +26,19 @@ class GameState:
     def try_to_grab(self):
         new_grabbed_molecules = []
 
-        grab_pos_up = Position(self.player.position.x, self.player.position.y - 1)
-        grab_pos_down = Position(self.player.position.x, self.player.position.y + 1)
-        grab_pos_left = Position(self.player.position.x - 1, self.player.position.y)
-        grab_pos_right = Position(self.player.position.x + 1, self.player.position.y)
+        adjacent_positions = [
+            Position(self.player.position.x, self.player.position.y - 1),
+            Position(self.player.position.x, self.player.position.y + 1),
+            Position(self.player.position.x - 1, self.player.position.y),
+            Position(self.player.position.x + 1, self.player.position.y),
+        ]
 
-        for molecule_index in range(0, len(self.level.molecules)):
-            molecule = self.level.molecules[molecule_index]
-            if molecule == grab_pos_up or molecule == grab_pos_down or molecule == grab_pos_left or molecule == grab_pos_right:
-                new_grabbed_molecules.append(molecule_index)
+        for y in range(self.level.height):
+            for x in range(self.level.width):
+                molecule = self.level.molecules[y][x]
+                if molecule and any(molecule.position == pos for pos in adjacent_positions):
+                    print("Connection done")
+                    new_grabbed_molecules.append(molecule)
 
         self.grabbed_molecules = new_grabbed_molecules
     
@@ -50,9 +54,38 @@ class GameState:
             return True
         return False
     
+    def update_molecule_positions(self):
+        for molecule in self.grabbed_molecules:
+            # Calculate new position based on movement direction
+            new_x, new_y = self.calculate_new_position(molecule.position, direction)
+            # Update the grid or list tracking molecule positions
+            self.level.molecules[molecule.position.y][molecule.position.x] = None  # Clear old position
+            molecule.position.x, molecule.position.y = new_x, new_y  # Update molecule object
+            self.level.molecules[new_y][new_x] = molecule  # Update new position in tracking structure
+
+    def calculate_new_position(self, current_position, direction):
+        # Returns the new position based on the current position and direction of movement
+        return current_position.x + direction[0], current_position.y + direction[1]
+
     def try_to_move(self, direction):
-        if self.try_to_move_molecule(self.player, direction):
-            pass
+        new_player_x = self.player.position.x + direction[0]
+        new_player_y = self.player.position.y + direction[1]
+
+        self.player.position.x = new_player_x
+        self.player.position.y = new_player_y
+
+        for molecule in self.grabbed_molecules:
+            new_mol_x = molecule.position.x + direction[0]
+            new_mol_y = molecule.position.y + direction[1]
+
+            self.level.molecules[molecule.position.y][molecule.position.x] = None
+            molecule.position.x = new_mol_x
+            molecule.position.y = new_mol_y
+            self.level.molecules[new_mol_y][new_mol_x] = molecule 
+            
+        self.try_to_grab()
+        #if self.try_to_move_molecule(self.player, direction):
+        #    pass
             # self.try_to_grab()
 
 
