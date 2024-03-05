@@ -23,15 +23,21 @@ class GameState:
     def reset(self):
         self.__init__()
 
-    def try_to_grab(self):
-        if self.player.grabbed_up != self.level.molecules[self.player.position.y - 1][self.player.position.x]:
-            self.player.grabbed_up = self.level.molecules[self.player.position.y - 1][self.player.position.x]
-        if self.player.grabbed_down != self.level.molecules[self.player.position.y + 1][self.player.position.x]:
-            self.player.grabbed_down = self.level.molecules[self.player.position.y + 1][self.player.position.x]
-        if self.player.grabbed_left != self.level.molecules[self.player.position.y][self.player.position.x - 1]:
-            self.player.grabbed_left = self.level.molecules[self.player.position.y][self.player.position.x - 1]
-        if self.player.grabbed_right != self.level.molecules[self.player.position.y][self.player.position.x + 1]:
-            self.player.grabbed_right = self.level.molecules[self.player.position.y][self.player.position.x + 1]
+    def try_to_grab(self, molecule):
+        molecule.verify_grabs(self.level.molecules)
+
+        if molecule.grabbed_up != self.level.molecules[molecule.position.y - 1][molecule.position.x] and self.level.molecules[molecule.position.y - 1][molecule.position.x].grabbed_up != molecule:
+            molecule.grabbed_up = self.level.molecules[molecule.position.y - 1][molecule.position.x]
+            self.level.molecules[molecule.position.y - 1][molecule.position.x].grabbed_up = molecule
+        if molecule.grabbed_down != self.level.molecules[molecule.position.y + 1][molecule.position.x] and self.level.molecules[molecule.position.y + 1][molecule.position.x].grabbed_down != molecule:
+            molecule.grabbed_down = self.level.molecules[molecule.position.y + 1][molecule.position.x]
+            self.level.molecules[molecule.position.y + 1][molecule.position.x].grabbed_down = molecule
+        if molecule.grabbed_left != self.level.molecules[molecule.position.y][molecule.position.x - 1] and self.level.molecules[molecule.position.y][molecule.position.x - 1].grabbed_left != molecule:
+            molecule.grabbed_left = self.level.molecules[molecule.position.y][molecule.position.x - 1]
+            self.level.molecules[molecule.position.y][molecule.position.x - 1].grabbed_left = molecule
+        if molecule.grabbed_right != self.level.molecules[molecule.position.y][molecule.position.x + 1] and self.level.molecules[molecule.position.y][molecule.position.x + 1].grabbed_right != molecule:
+            molecule.grabbed_right = self.level.molecules[molecule.position.y][molecule.position.x + 1]
+            self.level.molecules[molecule.position.y][molecule.position.x + 1].grabbed_right = molecule
 
     def move_molecule(self, molecule, direction):
         self.level.molecules[molecule.position.y][molecule.position.x] = None
@@ -60,11 +66,12 @@ class GameState:
     
     def try_to_move(self, direction):
         if self.try_to_move_molecule(self.player, direction):
-            self.try_to_grab()
+            self.try_to_grab(self.player)
 
 
 class Molecule():
     def __init__(self, char, x, y):
+        self.char = char
         self.position = Position(x,y)
         
         self.max_grab = 0
@@ -81,6 +88,33 @@ class Molecule():
         self.grabbed_down = None
         self.grabbed_left = None
         self.grabbed_right = None
+    
+    def verify_grabs(self, molecules):
+        if self.grabbed_up != None and self.grabbed_up != molecules[self.position.y - 1][self.position.x]:
+            self.grabbed_up.grabbed_down = None
+            self.grabbed_up = None
+        if self.grabbed_down != None and self.grabbed_down != molecules[self.position.y + 1][self.position.x]:
+            self.grabbed_down.grabbed_up = None
+            self.grabbed_down = None
+        if self.grabbed_left != None and self.grabbed_left != molecules[self.position.y][self.position.x - 1]:
+            self.grabbed_left.grabbed_right = None
+            self.grabbed_left = None
+        if self.grabbed_right != None and self.grabbed_right != molecules[self.position.y][self.position.x + 1]:
+            self.grabbed_right.grabbed_left = None
+            self.grabbed_right = None
+
+    def count_grabbed(self):
+        count = 0
+        if self.grabbed_up != None:
+            count+=1
+        if self.grabbed_down != None:
+            count+=1
+        if self.grabbed_left != None:
+            count+=1
+        if self.grabbed_right != None:
+            count+=1
+
+        return count
 
 class Level:
     def load_level_from_string(self, width, height, string):
