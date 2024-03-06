@@ -35,18 +35,18 @@ class GameState:
         if molecule == None:
             return
 
-        if self.level.molecules[molecule.position.y - 1][molecule.position.x] != None and molecule.grabbed_up != self.level.molecules[molecule.position.y - 1][molecule.position.x] and self.level.molecules[molecule.position.y - 1][molecule.position.x].grabbed_up != molecule:
+        if self.level.molecules[molecule.position.y - 1][molecule.position.x] != None and molecule.grabbed_up != self.level.molecules[molecule.position.y - 1][molecule.position.x] and self.level.molecules[molecule.position.y - 1][molecule.position.x].grabbed_down != molecule:
             molecule.grabbed_up = self.level.molecules[molecule.position.y - 1][molecule.position.x]
-            self.level.molecules[molecule.position.y - 1][molecule.position.x].grabbed_up = molecule
-        if self.level.molecules[molecule.position.y + 1][molecule.position.x] != None and molecule.grabbed_down != self.level.molecules[molecule.position.y + 1][molecule.position.x] and self.level.molecules[molecule.position.y + 1][molecule.position.x].grabbed_down != molecule:
+            self.level.molecules[molecule.position.y - 1][molecule.position.x].grabbed_down = molecule
+        if self.level.molecules[molecule.position.y + 1][molecule.position.x] != None and molecule.grabbed_down != self.level.molecules[molecule.position.y + 1][molecule.position.x] and self.level.molecules[molecule.position.y + 1][molecule.position.x].grabbed_up != molecule:
             molecule.grabbed_down = self.level.molecules[molecule.position.y + 1][molecule.position.x]
-            self.level.molecules[molecule.position.y + 1][molecule.position.x].grabbed_down = molecule
-        if self.level.molecules[molecule.position.y][molecule.position.x - 1] != None and molecule.grabbed_left != self.level.molecules[molecule.position.y][molecule.position.x - 1] and self.level.molecules[molecule.position.y][molecule.position.x - 1].grabbed_left != molecule:
+            self.level.molecules[molecule.position.y + 1][molecule.position.x].grabbed_up = molecule
+        if self.level.molecules[molecule.position.y][molecule.position.x - 1] != None and molecule.grabbed_left != self.level.molecules[molecule.position.y][molecule.position.x - 1] and self.level.molecules[molecule.position.y][molecule.position.x - 1].grabbed_right != molecule:
             molecule.grabbed_left = self.level.molecules[molecule.position.y][molecule.position.x - 1]
-            self.level.molecules[molecule.position.y][molecule.position.x - 1].grabbed_left = molecule
-        if self.level.molecules[molecule.position.y][molecule.position.x + 1] != None and molecule.grabbed_right != self.level.molecules[molecule.position.y][molecule.position.x + 1] and self.level.molecules[molecule.position.y][molecule.position.x + 1].grabbed_right != molecule:
+            self.level.molecules[molecule.position.y][molecule.position.x - 1].grabbed_right = molecule
+        if self.level.molecules[molecule.position.y][molecule.position.x + 1] != None and molecule.grabbed_right != self.level.molecules[molecule.position.y][molecule.position.x + 1] and self.level.molecules[molecule.position.y][molecule.position.x + 1].grabbed_left != molecule:
             molecule.grabbed_right = self.level.molecules[molecule.position.y][molecule.position.x + 1]
-            self.level.molecules[molecule.position.y][molecule.position.x + 1].grabbed_right = molecule
+            self.level.molecules[molecule.position.y][molecule.position.x + 1].grabbed_left = molecule
 
     def move_molecule(self, molecule, direction):
         if molecule.already_moved_this_round:
@@ -88,6 +88,9 @@ class GameState:
             self.try_to_grab(self.get_player())
             for y in range(0, self.level.height):
                 for x in range(0, self.level.width):
+                    if self.level.molecules[y][x] != None:
+                        self.level.molecules[y][x].already_moved_this_round = False
+                        self.level.molecules[y][x].verify_grabs(self.level.molecules)
                         self.try_to_grab(self.level.molecules[y][x])
 
 
