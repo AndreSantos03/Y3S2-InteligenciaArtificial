@@ -4,17 +4,17 @@ def draw_player(gamestate, surface):
     pass
 
 def draw_walls(gamestate, surface):
-    for y in range(0, gamestate.level.height):
-        for x in range(0, gamestate.level.width):
-            if gamestate.level.walls[y][x] != 0:
+    for y in range(0, gamestate.board_height):
+        for x in range(0, gamestate.board_width):
+            if gamestate.walls[y][x] != 0:
                 pygame.draw.rect(surface, (20,20,200), (x*50, y*50, 50,50))
 
 def draw_atoms(gamestate, surface):
-    for y in range(0, gamestate.level.height):
-        for x in range(0, gamestate.level.width):
-            if gamestate.level.atoms[y][x] != None:
-                atom = gamestate.level.atoms[y][x]
-                if gamestate.level.atoms[y][x].is_player:
+    for y in range(0, gamestate.board_height):
+        for x in range(0, gamestate.board_width):
+            if gamestate.atoms[y][x] != None:
+                atom = gamestate.atoms[y][x]
+                if gamestate.atoms[y][x].is_player:
                     pygame.draw.circle(surface, (200,200,20), (x*50 + 25, y*50 + 25), 20)
 
                     pygame.draw.rect(surface, (0,0,0), (x*50, y*50 - 50, 50,50), 1)

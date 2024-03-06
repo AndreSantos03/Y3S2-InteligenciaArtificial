@@ -16,18 +16,58 @@ class Position:
 
 class GameState:
     def __init__(self):
-        self.level = Level()
         self.grabbed_atoms = []
+
+        self.walls = []
+        self.atoms = []
+        self.atoms = []
+
+        self.board_width = 0
+        self.board_height = 0
+
+        self.load_level_from_string(13, 13,  "XXXXXXXXXXXXX"
+                                             "XXXXXX XXXXXX"
+                                             "XXXXX C XXXXX"
+                                             "XXXX     XXXX"
+                                             "XXX       XXX"
+                                             "XX  h   h  XX"
+                                             "X           X"
+                                             "XX   X     XX"
+                                             "XXX h   h XXX"
+                                             "XXXX     XXXX"
+                                             "XXXXX   XXXXX"
+                                             "XXXXXX XXXXXX"
+                                             "XXXXXXXXXXXXX")
 
     def reset(self):
         self.__init__()
 
+    def load_level_from_string(self, width, height, string):
+        if len(string) < (width*height):
+            print ("Level size is incorrect")
+            # handle error
+        
+        self.board_width = width
+        self.board_height = height
+
+        self.walls = [[0] * width for i in range(0, height)]
+        self.atoms = [[None] * width for i in range(0, height)]
+
+        for y in range(0, height):
+            for x in range(0, width):
+                index = width * y + x
+
+                if string[index] == 'X':
+                    self.walls[y][x] = 1
+                elif string[index] != ' ':
+                    self.atoms[y][x] = Atom(string[index], x, y)
+
     def get_player(self):
-        for y in range(0, self.level.height):
-            for x in range(0, self.level.width):
-                if self.level.temp_atoms[y][x] != None:
-                    if self.level.temp_atoms[y][x].is_player:
-                        return self.level.temp_atoms[y][x]
+        for y in range(0, self.board_height):
+            for x in range(0, self.board_width):
+                if self.atoms[y][x] != None:
+                    if self.atoms[y][x].is_player:
+                        return self.atoms[y][x]
         return None
 
 
@@ -35,28 +75,28 @@ class GameState:
         if atom == None:
             return
 
-        if self.level.temp_atoms[atom.position.y - 1][atom.position.x] != None and atom.grabbed_up != self.level.temp_atoms[atom.position.y - 1][atom.position.x] and self.level.temp_atoms[atom.position.y - 1][atom.position.x].grabbed_down != atom:
-            atom.grabbed_up = self.level.temp_atoms[atom.position.y - 1][atom.position.x]
-            self.level.temp_atoms[atom.position.y - 1][atom.position.x].grabbed_down = atom
-        if self.level.temp_atoms[atom.position.y + 1][atom.position.x] != None and atom.grabbed_down != self.level.temp_atoms[atom.position.y + 1][atom.position.x] and self.level.temp_atoms[atom.position.y + 1][atom.position.x].grabbed_up != atom:
-            atom.grabbed_down = self.level.temp_atoms[atom.position.y + 1][atom.position.x]
-            self.level.temp_atoms[atom.position.y + 1][atom.position.x].grabbed_up = atom
-        if self.level.temp_atoms[atom.position.y][atom.position.x - 1] != None and atom.grabbed_left != self.level.temp_atoms[atom.position.y][atom.position.x - 1] and self.level.temp_atoms[atom.position.y][atom.position.x - 1].grabbed_right != atom:
-            atom.grabbed_left = self.level.temp_atoms[atom.position.y][atom.position.x - 1]
-            self.level.temp_atoms[atom.position.y][atom.position.x - 1].grabbed_right = atom
-        if self.level.temp_atoms[atom.position.y][atom.position.x + 1] != None and atom.grabbed_right != self.level.temp_atoms[atom.position.y][atom.position.x + 1] and self.level.temp_atoms[atom.position.y][atom.position.x + 1].grabbed_left != atom:
-            atom.grabbed_right = self.level.temp_atoms[atom.position.y][atom.position.x + 1]
-            self.level.temp_atoms[atom.position.y][atom.position.x + 1].grabbed_left = atom
+        if self.atoms[atom.position.y - 1][atom.position.x] != None and atom.grabbed_up != self.atoms[atom.position.y - 1][atom.position.x] and self.atoms[atom.position.y - 1][atom.position.x].grabbed_down != atom:
+            atom.grabbed_up = self.atoms[atom.position.y - 1][atom.position.x]
+            self.atoms[atom.position.y - 1][atom.position.x].grabbed_down = atom
+        if self.atoms[atom.position.y + 1][atom.position.x] != None and atom.grabbed_down != self.atoms[atom.position.y + 1][atom.position.x] and self.atoms[atom.position.y + 1][atom.position.x].grabbed_up != atom:
+            atom.grabbed_down = self.atoms[atom.position.y + 1][atom.position.x]
+            self.atoms[atom.position.y + 1][atom.position.x].grabbed_up = atom
+        if self.atoms[atom.position.y][atom.position.x - 1] != None and atom.grabbed_left != self.atoms[atom.position.y][atom.position.x - 1] and self.atoms[atom.position.y][atom.position.x - 1].grabbed_right != atom:
+            atom.grabbed_left = self.atoms[atom.position.y][atom.position.x - 1]
+            self.atoms[atom.position.y][atom.position.x - 1].grabbed_right = atom
+        if self.atoms[atom.position.y][atom.position.x + 1] != None and atom.grabbed_right != self.atoms[atom.position.y][atom.position.x + 1] and self.atoms[atom.position.y][atom.position.x + 1].grabbed_left != atom:
+            atom.grabbed_right = self.atoms[atom.position.y][atom.position.x + 1]
+            self.atoms[atom.position.y][atom.position.x + 1].grabbed_left = atom
 
     def move_atom(self, atom, direction):
         if atom.already_moved_this_round:
             return False
         atom.already_moved_this_round = True
         
-        self.level.temp_atoms[atom.position.y][atom.position.x] = None
+        self.atoms[atom.position.y][atom.position.x] = None
         atom.position.x += direction[0]
         atom.position.y += direction[1]
-        self.level.temp_atoms[atom.position.y][atom.position.x] = atom
+        self.atoms[atom.position.y][atom.position.x] = atom
 
         if atom.grabbed_up != None and direction != UP:
             self.try_to_move_atom(atom.grabbed_up, direction)
@@ -68,8 +108,8 @@ class GameState:
             self.try_to_move_atom(atom.grabbed_right, direction)
     
     def try_to_move_atom(self, atom, direction):
-        if (self.level.walls[atom.position.y + direction[1]][atom.position.x + direction[0]] == 0):
-            next_atom = self.level.temp_atoms[atom.position.y + direction[1]][atom.position.x + direction[0]]
+        if (self.walls[atom.position.y + direction[1]][atom.position.x + direction[0]] == 0):
+            next_atom = self.atoms[atom.position.y + direction[1]][atom.position.x + direction[0]]
             if (next_atom != None):
                 if not self.try_to_move_atom(next_atom, direction):
                     return False
@@ -78,25 +118,23 @@ class GameState:
         return False
     
     def player_try_to_move(self, direction):
-        self.level.atoms = self.level.temp_atoms
-
         player = self.get_player()
         if self.try_to_move_atom(self.get_player(), direction):
-            player.verify_grabs(self.level.temp_atoms)
+            player.verify_grabs(self.atoms)
             self.try_to_grab(player)
-            for y in range(0, self.level.height):
-                for x in range(0, self.level.width):
-                    if self.level.temp_atoms[y][x] != None:
-                        self.level.temp_atoms[y][x].already_moved_this_round = False
-                        self.level.temp_atoms[y][x].verify_grabs(self.level.temp_atoms)
-                        self.try_to_grab(self.level.temp_atoms[y][x])
+            for y in range(0, self.board_height):
+                for x in range(0, self.board_width):
+                    if self.atoms[y][x] != None:
+                        self.atoms[y][x].already_moved_this_round = False
+                        self.atoms[y][x].verify_grabs(self.atoms)
+                        self.try_to_grab(self.atoms[y][x])
 
 
 
     def is_goal_achieved(self):
-        for y in range(0, self.level.height):
-            for x in range(0, self.level.width):
-                atom = self.level.temp_atoms[y][x]
+        for y in range(0, self.board_height):
+            for x in range(0, self.board_width):
+                atom = self.atoms[y][x]
                 if atom != None:
                     if atom.grabbed_up != None or atom.grabbed_down != None or atom.grabbed_left != None or atom.grabbed_right != None:
                         return True
@@ -157,48 +195,3 @@ class Atom():
 
         return count
 
-class Level:
-    def load_level_from_string(self, width, height, string):
-        if len(string) < (width*height):
-            print ("Level size is incorrect")
-            # handle error
-        
-        self.width = width
-        self.height = height
-
-        self.walls = [[0] * width for i in range(0, height)]
-        self.atoms = [[None] * width for i in range(0, height)]
-
-        for y in range(0, height):
-            for x in range(0, width):
-                index = width * y + x
-
-                if string[index] == 'X':
-                    self.walls[y][x] = 1
-                elif string[index] != ' ':
-                    self.atoms[y][x] = Atom(string[index], x, y)
-        
-        self.temp_atoms = self.atoms
-
-                    
-    def __init__(self):
-        self.walls = []
-        self.atoms = []
-        self.temp_atoms = []
-
-        self.width = 0
-        self.height = 0
-
-        self.load_level_from_string(13, 13,  "XXXXXXXXXXXXX"
-                                             "XXXXXX XXXXXX"
-                                             "XXXXX C XXXXX"
-                                             "XXXX     XXXX"
-                                             "XXX       XXX"
-                                             "XX  h   h  XX"
-                                             "X           X"
-                                             "XX   X     XX"
-                                             "XXX h   h XXX"
-                                             "XXXX     XXXX"
-                                             "XXXXX   XXXXX"
-                                             "XXXXXX XXXXXX"
-                                             "XXXXXXXXXXXXX")
