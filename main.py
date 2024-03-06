@@ -12,13 +12,13 @@ def handle_input(gamestate):
         sys.exit()
     if event.type == pygame.KEYDOWN:
         if event.key == pygame.K_w or event.key == pygame.K_UP:
-            gamestate.try_to_move(UP)
+            gamestate.player_try_to_move(UP)
         elif event.key == pygame.K_s or event.key == pygame.K_DOWN:
-            gamestate.try_to_move(DOWN)
+            gamestate.player_try_to_move(DOWN)
         elif event.key == pygame.K_a or event.key == pygame.K_LEFT:
-            gamestate.try_to_move(LEFT)
+            gamestate.player_try_to_move(LEFT)
         elif event.key == pygame.K_d or event.key == pygame.K_RIGHT:
-            gamestate.try_to_move(RIGHT)
+            gamestate.player_try_to_move(RIGHT)
         elif event.key == pygame.K_r:
             gamestate.reset()
             return
