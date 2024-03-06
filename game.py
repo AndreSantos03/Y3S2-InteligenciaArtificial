@@ -93,6 +93,9 @@ class GameState:
                         self.level.molecules[y][x].verify_grabs(self.level.molecules)
                         self.try_to_grab(self.level.molecules[y][x])
 
+    def goal_achieved():
+        return False
+
 
 class Molecule():
     def __init__(self, char, x, y):
