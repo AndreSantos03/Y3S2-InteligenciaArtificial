@@ -1,23 +1,41 @@
-from game import GameState
+from game import *
+from collections import deque
+import copy
 
-moves = {
-    'UP': (0, -1),
-    'DOWN': (0, 1),
-    'LEFT': (-1, 0),
-    'RIGHT': (1, 0)
-}
+moves = { UP, DOWN, LEFT, RIGHT}
 
-def bfs(unvisited,visited): 
+def get_all_states(original_gamestate):
+    gamestates = []
+    for move in moves:
+        copy_gamestate = copy.deepcopy(original_gamestate)
+        copy_gamestate.player_try_to_move(move)
+        gamestates.append(copy_gamestate)
+    return gamestates
+            
+        
 
-    current_state = unvisited[0]
-    unvisited = unvisited[1:]
-    visited.append(current_state)
+def breadth_first_search(initial_state):
 
-    if current_state.goal_achieved():
-        return visited
+    q = deque([initial_state])
+    visited = {initial_state: None}
+
+    while len(q) != 0:
+        current_state = q.popleft()
+        
+        if current_state.is_goal_achieved():
+            path = []
+            while current_state:
+                path.append(current_state)
+                current_state = visited[current_state]  
+            path.reverse()
+            return path
+        for state in get_all_states(current_state):
+            if state not in visited:
+                visited[state] = current_state
+                q.append(state)
     
-    else:
-        next_states = []
-        for move in moves:
-            next_states.append(GameState.try_to_move)
+    return []
+
+
+
 

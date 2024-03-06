@@ -25,20 +25,6 @@ class GameState:
         self.board_width = 0
         self.board_height = 0
 
-        self.load_level_from_string(13, 13,  "XXXXXXXXXXXXX"
-                                             "XXXXXX XXXXXX"
-                                             "XXXXX C XXXXX"
-                                             "XXXX     XXXX"
-                                             "XXX       XXX"
-                                             "XX  h   h  XX"
-                                             "X           X"
-                                             "XX   X     XX"
-                                             "XXX h   h XXX"
-                                             "XXXX     XXXX"
-                                             "XXXXX   XXXXX"
-                                             "XXXXXX XXXXXX"
-                                             "XXXXXXXXXXXXX")
-
     def reset(self):
         self.__init__()
 
@@ -135,10 +121,9 @@ class GameState:
         for y in range(0, self.board_height):
             for x in range(0, self.board_width):
                 atom = self.atoms[y][x]
-                if atom != None:
-                    if atom.grabbed_up != None or atom.grabbed_down != None or atom.grabbed_left != None or atom.grabbed_right != None:
-                        return True
-        return False
+                if atom is not None and atom.count_grabbed() == 0:
+                    return False 
+        return True  
 
 
 class Atom():
