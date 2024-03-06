@@ -25,6 +25,7 @@ def handle_input(gamestate):
         elif event.key == pygame.K_ESCAPE :
             pygame.quit()
             sys.exit()
+        
 
 def main():
     pygame.init()
