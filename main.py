@@ -42,7 +42,7 @@ def show_algorithms(game_states):
         draw_screen(state, surface)
         screen.blit(surface, (0,0))
         pygame.display.update()
-        time.sleep(2)  # 2-second delay between moves
+        time.sleep(0.5)  # 2-second delay between moves
 
 
 def main():
@@ -72,21 +72,21 @@ def main():
 
 
     
-    # result = breadth_first_search(gamestate)
-    # print(len(result))
-    # show_algorithms(result)
+    result = breadth_first_search(gamestate, surface, screen)
+    print(len(result))
+    show_algorithms(result)
 
     
 
 
-    while (True):
-        surface.fill((250,250,250))
-        draw_screen(gamestate, surface)
-        screen.blit(surface, (0,0))
-        pygame.display.update()
+    # while (True):
+    #     surface.fill((250,250,250))
+    #     draw_screen(gamestate, surface)
+    #     screen.blit(surface, (0,0))
+    #     pygame.display.update()
 
-        handle_input(gamestate)
-        print(gamestate.is_goal_achieved())
+    #     handle_input(gamestate)
+    #     print(gamestate.is_goal_achieved())
 
 
 main()

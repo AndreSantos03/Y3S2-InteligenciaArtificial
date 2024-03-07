@@ -121,7 +121,7 @@ class GameState:
         for y in range(0, self.board_height):
             for x in range(0, self.board_width):
                 atom = self.atoms[y][x]
-                if atom is not None and atom.count_grabbed() == 0:
+                if atom != None and atom.count_grabbed() == 0:
                     return False 
         return True  
 

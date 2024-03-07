@@ -1,6 +1,8 @@
 from game import *
 from collections import deque
 import copy
+from draw import *
+import pygame
 
 moves = { UP, DOWN, LEFT, RIGHT}
 
@@ -14,13 +16,18 @@ def get_all_states(original_gamestate):
             
         
 
-def breadth_first_search(initial_state):
+def breadth_first_search(initial_state, surface, screen):
 
     q = deque([initial_state])
     visited = {initial_state: None}
 
     while len(q) != 0:
         current_state = q.popleft()
+
+        surface.fill((250,250,250))
+        draw_screen(current_state, surface)
+        screen.blit(surface, (0,0))
+        pygame.display.update()
         
         if current_state.is_goal_achieved():
             path = []
