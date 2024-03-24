@@ -58,3 +58,20 @@ def dfs(initial_state):
             child_node = Node(child_state, parent=current_node, action=direction)
             stack.append(child_node)
     return None, None
+
+
+def bfs(initial_state):
+    queue = deque([Node(initial_state)])
+    visited = set()
+
+    while queue:
+        current_node = queue.popleft()
+        current_state = current_node.state
+        if current_state.is_goal_achieved():
+            return current_node.get_path()
+        for child_state, direction in get_child_states(current_node.state):
+            if child_state not in visited:
+                visited.add(child_state)
+                child_node = Node(child_state,parent=current_node,action=direction)
+                queue.append(child_node)
+    return None

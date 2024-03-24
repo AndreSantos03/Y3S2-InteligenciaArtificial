@@ -75,12 +75,13 @@ def main():
     screen.blit(surface, (0, 0))
     pygame.display.update()
 
-    result = dfs(gamestate)
+    result = bfs(gamestate)
 
     moves = (x[0] for x in result)
+    print(moves)
     gamestate_path = (x[1] for x in result)
 
-    show_algorithm(gamestate_path,1,surface,screen)
+    show_algorithm(gamestate_path,0.2,surface,screen)
 
 
     # while (True):
