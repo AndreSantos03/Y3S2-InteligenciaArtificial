@@ -76,7 +76,7 @@ def main():
     pygame.display.update()
 
 
-    result = greedy_search(gamestate)
+    result = a_star_search(gamestate)
 
     print(result)
 

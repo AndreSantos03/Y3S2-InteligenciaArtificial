@@ -1,8 +1,9 @@
 from game import *
-from collections import deque
 from draw import *
-import pygame
-import time
+
+from collections import deque
+import heapq
+
 
 class Node:
     def __init__(self, state, parent=None, action=None, cost=0):
@@ -27,6 +28,12 @@ class Node:
         path.reverse()
         print(path)
         return path
+    
+    def __lt__(self, other):
+        # Compare nodes based on their costs
+        return self.cost < other.cost
+    
+
     
 def get_child_states(parent_state):
     child_states = []
@@ -122,7 +129,7 @@ def greedy_search(initial_state):
     frontier = [(Node(initial_state), search_heuristic(initial_state))]
 
     while frontier:
-        current_node, _ = frontier.pop(0)  # Pop the node with the lowest heuristic value
+        current_node, _ = frontier.pop(0)
         current_state = current_node.state
         if current_state.is_goal_achieved():
             return current_node.get_path()
@@ -134,6 +141,36 @@ def greedy_search(initial_state):
                 child_node = Node(child_state, parent=current_node, action=direction)
                 frontier.append((child_node, search_heuristic(child_state)))
             
-        frontier.sort(key=lambda x: x[1])  # Sort frontier by heuristic value
+        frontier.sort(key=lambda x: x[1]) 
     
     return None
+
+
+def a_star_search(initial_state):
+    visited = set()
+    frontier = [(search_heuristic(initial_state), 0, Node(initial_state))]  # Priority queue: (heuristic, actual_cost, node)
+    heapq.heapify(frontier)  # Convert frontier list into a heap
+
+    while frontier:
+        _, actual_cost, current_node = heapq.heappop(frontier)  # Pop the node with the lowest total cost
+        current_state = current_node.state
+        if current_state.is_goal_achieved():
+            return current_node.get_path()
+
+        visited.add(current_state)
+
+        for child_state, direction in get_child_states(current_state):
+            if child_state not in visited:
+                child_node = Node(child_state, parent=current_node, action=direction)
+                child_actual_cost = actual_cost + 1  
+                child_heuristic = search_heuristic(child_state)
+                total_cost = child_actual_cost + child_heuristic
+                heapq.heappush(frontier, (total_cost, child_actual_cost, child_node))
+
+
+    
+    return None
+
+    
+    
+        
