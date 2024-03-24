@@ -1,3 +1,5 @@
+import copy
+
 UP = (0,-1)
 DOWN = (0,1)
 LEFT = (-1,0)
@@ -13,20 +15,35 @@ class Position:
             return NotImplemented
 
         return (self.x == other.x) and (self.y == other.y)
-
+    
+    def __hash__(self):
+        return hash((self.x, self.y))
 class GameState:
     def __init__(self):
         self.grabbed_atoms = []
 
         self.walls = []
         self.atoms = []
-        self.atoms = []
 
         self.board_width = 0
         self.board_height = 0
 
+    def __hash__(self):
+        state_representation = (
+            tuple(map(tuple, self.walls)),  
+            tuple(map(tuple, self.atoms)) 
+        )
+        return hash(state_representation)
+
+    def __eq__(self, other):
+        print(isinstance(other, GameState))
+        if isinstance(other, GameState):
+            return self.walls == other.walls and self.atoms == other.atoms and self.grabbed_atoms == other.grabbed_atoms
+        return False
+
     def reset(self):
         self.__init__()
+
 
     def load_level_from_string(self, width, height, string):
         if len(string) < (width*height):
@@ -122,7 +139,7 @@ class GameState:
             for x in range(0, self.board_width):
                 atom = self.atoms[y][x]
                 if atom != None and atom.count_grabbed() == 0:
-                    return False 
+                    return False
         return True  
 
 
@@ -153,6 +170,14 @@ class Atom():
 
         self.already_moved_this_round = False
     
+    def __eq__(self, other):
+        if isinstance(other, Atom):
+            return (self.char, self.position) == (other.char, other.position)
+        return False
+    
+    def __hash__(self):
+        return hash((self.char, self.position))
+
     def verify_grabs(self, atoms):
         if self.grabbed_up != None and self.grabbed_up != atoms[self.position.y - 1][self.position.x]:
             self.grabbed_up.grabbed_down = None

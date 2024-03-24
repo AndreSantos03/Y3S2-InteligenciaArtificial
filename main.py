@@ -28,21 +28,20 @@ def handle_input(gamestate):
             pygame.quit()
             sys.exit()
             
-def show_algorithms(game_states):
-    print(len(game_states))
-    pygame.init()
-    clock = pygame.time.Clock()
-    screen = pygame.display.set_mode((650, 650))
-
-    surface = pygame.Surface(screen.get_size())
-    surface = surface.convert()
-
+def show_algorithm(game_states,interval, surface, screen):
     for state in game_states:
-        surface.fill((250,250,250))
+        surface.fill((250, 250, 250))
         draw_screen(state, surface)
-        screen.blit(surface, (0,0))
+        screen.blit(surface, (0, 0))
         pygame.display.update()
-        time.sleep(0.5)  # 2-second delay between moves
+        time.sleep(interval)  # Set interval between moves
+
+        # Event handling
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
 
 
 def main():
@@ -53,10 +52,10 @@ def main():
                                         "XXXXX C XXXXX"
                                         "XXXX     XXXX"
                                         "XXX       XXX"
-                                        "XX  h   h  XX"
+                                        "XX  h      XX"
                                         "X           X"
                                         "XX   X     XX"
-                                        "XXX h   h XXX"
+                                        "XXX       XXX"
                                         "XXXX     XXXX"
                                         "XXXXX   XXXXX"
                                         "XXXXXX XXXXXX"
@@ -71,12 +70,17 @@ def main():
     surface = surface.convert()
 
 
-    
-    result = breadth_first_search(gamestate, surface, screen)
-    print(len(result))
-    show_algorithms(result)
+    surface.fill((250, 250, 250))
+    draw_screen(gamestate, surface)
+    screen.blit(surface, (0, 0))
+    pygame.display.update()
 
-    
+    result = dfs(gamestate)
+
+    moves = (x[0] for x in result)
+    gamestate_path = (x[1] for x in result)
+
+    show_algorithm(gamestate_path,1,surface,screen)
 
 
     # while (True):

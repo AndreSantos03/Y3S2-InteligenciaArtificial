@@ -1,48 +1,60 @@
 from game import *
 from collections import deque
-import copy
 from draw import *
 import pygame
+import time
 
-moves = { UP, DOWN, LEFT, RIGHT}
+def get_child_states(parent_state):
+    child_states = []
 
-def get_all_states(original_gamestate):
-    gamestates = []
-    for move in moves:
-        copy_gamestate = copy.deepcopy(original_gamestate)
-        copy_gamestate.player_try_to_move(move)
-        gamestates.append(copy_gamestate)
-    return gamestates
-            
-        
+    for direction in [DOWN, LEFT, RIGHT, UP]:
+        child_state = copy.deepcopy(parent_state)
+        if child_state.try_to_move_atom(child_state.get_player(), direction):
+            child_state.player_try_to_move(direction)
+            child_states.append((child_state,direction))
 
-def breadth_first_search(initial_state, surface, screen):
+    return child_states
 
-    q = deque([initial_state])
-    visited = {initial_state: None}
+class Node:
+    def __init__(self, state, parent=None, action=None, cost=0):
+        self.state = state
+        self.parent = parent
+        self.action = action
+        self.cost = cost
 
-    while len(q) != 0:
-        current_state = q.popleft()
 
-        surface.fill((250,250,250))
-        draw_screen(current_state, surface)
-        screen.blit(surface, (0,0))
-        pygame.display.update()
-        
-        if current_state.is_goal_achieved():
-            path = []
-            while current_state:
-                path.append(current_state)
-                current_state = visited[current_state]  
-            path.reverse()
-            return path
-        for state in get_all_states(current_state):
-            if state not in visited:
-                visited[state] = current_state
-                q.append(state)
+    def is_goal_state(self):
+
+        return self.state.is_goal_achieved()
+
     
-    return []
+
+    def get_path(self):
+        path = []
+        current_node = self
+        while current_node.parent is not None:
+            path.append((current_node.action, current_node.state)) 
+            current_node = current_node.parent
+        path.reverse()
+        print(path)
+        return path
+    
 
 
-
-
+def dfs(initial_state):
+    stack = [Node(initial_state)]
+    visited = set()  # Initialize an empty set for visited states
+    visited.add(initial_state)  # Add the initial state to the set
+    while stack:
+        current_node = stack.pop()
+        current_state = current_node.state
+        if current_state.is_goal_achieved():
+            return current_node.get_path()
+        for child_state, direction in get_child_states(current_node.state):
+            if child_state in visited:
+                continue
+            else:
+                visited.add(child_state)  # Add the child state to the visited set
+            child_node = Node(child_state, parent=current_node, action=direction)
+            stack.append(child_node)
+    return None, None
