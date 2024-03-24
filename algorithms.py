@@ -75,3 +75,32 @@ def bfs(initial_state):
                 child_node = Node(child_state,parent=current_node,action=direction)
                 queue.append(child_node)
     return None
+
+
+def ids(initial_state, max_depth):
+    for depth in range(max_depth):
+        result = recursive_dls(Node(initial_state),depth)
+        if result is not None:
+            return result
+    return None
+
+
+def recursive_dls(node, depth_limit):
+    state = node.state
+    if state.is_goal_achieved():
+        return node.get_path()
+    elif depth_limit == 0:
+        return None
+    else:
+        cutoff_occurred = False
+        for child_state, direction in get_child_states(state):
+            child_node = Node(child_state, parent=node, action=direction)
+            result = recursive_dls(child_node, depth_limit - 1)
+            if result == 'cutoff':
+                cutoff_occurred = True
+            elif result is not None:
+                return result
+        if cutoff_occurred:
+            return 'cutoff'
+        else:
+            return None

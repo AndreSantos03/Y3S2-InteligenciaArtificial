@@ -75,13 +75,18 @@ def main():
     screen.blit(surface, (0, 0))
     pygame.display.update()
 
-    result = bfs(gamestate)
+    result = ids(gamestate,4)
 
-    moves = (x[0] for x in result)
-    print(moves)
-    gamestate_path = (x[1] for x in result)
+    print(result)
 
-    show_algorithm(gamestate_path,0.2,surface,screen)
+    if(result != None):
+            
+        moves = (x[0] for x in result)
+        gamestate_path = (x[1] for x in result)
+
+        show_algorithm(gamestate_path,0.5,surface,screen)
+    else:
+        print("Algorithm didn't find a solution!")
 
 
     # while (True):
