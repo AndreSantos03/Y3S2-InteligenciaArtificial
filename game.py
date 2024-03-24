@@ -1,4 +1,6 @@
 import copy
+import sys
+
 
 UP = (0,-1)
 DOWN = (0,1)
@@ -18,6 +20,9 @@ class Position:
     
     def __hash__(self):
         return hash((self.x, self.y))
+    
+    def distance(self, other):
+        return abs(self.x - other.x) + abs(self.y - other.y)
 class GameState:
     def __init__(self):
         self.grabbed_atoms = []

@@ -4,17 +4,6 @@ from draw import *
 import pygame
 import time
 
-def get_child_states(parent_state):
-    child_states = []
-
-    for direction in [DOWN, LEFT, RIGHT, UP]:
-        child_state = copy.deepcopy(parent_state)
-        if child_state.try_to_move_atom(child_state.get_player(), direction):
-            child_state.player_try_to_move(direction)
-            child_states.append((child_state,direction))
-
-    return child_states
-
 class Node:
     def __init__(self, state, parent=None, action=None, cost=0):
         self.state = state
@@ -39,6 +28,29 @@ class Node:
         print(path)
         return path
     
+def get_child_states(parent_state):
+    child_states = []
+
+    for direction in [DOWN, LEFT, RIGHT, UP]:
+        child_state = copy.deepcopy(parent_state)
+        if child_state.try_to_move_atom(child_state.get_player(), direction):
+            child_state.player_try_to_move(direction)
+            child_states.append((child_state,direction))
+
+    return child_states
+
+def search_heuristic(state):
+    player_position = state.get_player().position
+    min_distance = sys.maxsize 
+
+    for atom_row in state.atoms:
+        for atom in atom_row:
+            if atom is not None:
+                distance = player_position.distance(atom.position)
+                min_distance = min(min_distance, distance)
+
+    return min_distance
+
 
 
 def dfs(initial_state):
@@ -104,3 +116,24 @@ def recursive_dls(node, depth_limit):
             return 'cutoff'
         else:
             return None
+        
+def greedy_search(initial_state):
+    visited = set() 
+    frontier = [(Node(initial_state), search_heuristic(initial_state))]
+
+    while frontier:
+        current_node, _ = frontier.pop(0)  # Pop the node with the lowest heuristic value
+        current_state = current_node.state
+        if current_state.is_goal_achieved():
+            return current_node.get_path()
+        
+        visited.add(current_state)
+
+        for child_state, direction in get_child_states(current_state):
+            if child_state not in visited:
+                child_node = Node(child_state, parent=current_node, action=direction)
+                frontier.append((child_node, search_heuristic(child_state)))
+            
+        frontier.sort(key=lambda x: x[1])  # Sort frontier by heuristic value
+    
+    return None

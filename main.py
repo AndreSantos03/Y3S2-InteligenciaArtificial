@@ -75,7 +75,8 @@ def main():
     screen.blit(surface, (0, 0))
     pygame.display.update()
 
-    result = ids(gamestate,4)
+
+    result = greedy_search(gamestate)
 
     print(result)
 
