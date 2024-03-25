@@ -41,7 +41,6 @@ class GameState:
         return hash(state_representation)
 
     def __eq__(self, other):
-        print(isinstance(other, GameState))
         if isinstance(other, GameState):
             return self.walls == other.walls and self.atoms == other.atoms and self.grabbed_atoms == other.grabbed_atoms
         return False

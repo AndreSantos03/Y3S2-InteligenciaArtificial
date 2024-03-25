@@ -26,7 +26,6 @@ class Node:
             path.append((current_node.action, current_node.state)) 
             current_node = current_node.parent
         path.reverse()
-        print(path)
         return path
     
     def __lt__(self, other):
