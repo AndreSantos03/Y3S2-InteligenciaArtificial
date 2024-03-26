@@ -96,10 +96,6 @@ class GameState:
             self.atoms[atom.position.y][atom.position.x + 1].grabbed_left = atom
 
     def move_atom(self, atom, direction):
-        if atom.already_moved_this_round:
-            return False
-        atom.already_moved_this_round = True
-        
         self.atoms[atom.position.y][atom.position.x] = None
         atom.position.x += direction[0]
         atom.position.y += direction[1]
@@ -117,24 +113,27 @@ class GameState:
     def try_to_move_atom(self, atom, direction):
         if (self.walls[atom.position.y + direction[1]][atom.position.x + direction[0]] == 0):
             next_atom = self.atoms[atom.position.y + direction[1]][atom.position.x + direction[0]]
+            if atom.already_moved_this_round:
+                return False
+            atom.already_moved_this_round = True
             if (next_atom != None):
                 if not self.try_to_move_atom(next_atom, direction):
                     return False
+            
             self.move_atom(atom, direction)
             return True
         return False
     
     def player_try_to_move(self, direction):
         player = self.get_player()
-        if self.try_to_move_atom(self.get_player(), direction):
-            player.verify_grabs(self.atoms)
-            self.try_to_grab(player)
-            for y in range(0, self.board_height):
-                for x in range(0, self.board_width):
-                    if self.atoms[y][x] != None:
-                        self.atoms[y][x].already_moved_this_round = False
-                        self.atoms[y][x].verify_grabs(self.atoms)
-                        self.try_to_grab(self.atoms[y][x])
+        self.try_to_move_atom(player, direction)
+    
+        for y in range(0, self.board_height):
+            for x in range(0, self.board_width):
+                if self.atoms[y][x] != None:
+                    self.atoms[y][x].already_moved_this_round = False
+                    self.atoms[y][x].verify_grabs(self.atoms)
+                    self.try_to_grab(self.atoms[y][x])
 
 
 
